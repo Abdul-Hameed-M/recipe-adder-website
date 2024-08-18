@@ -6,8 +6,7 @@
 
             var crypto = global.crypto || global.msCrypto; // for IE 11
             if (crypto && crypto.getRandomValues) {
-                // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
-                // Moderately fast, high quality
+                
                 var _rnds8 = new Uint8Array(16);
                 rng = function whatwgRNG() {
                     crypto.getRandomValues(_rnds8);
@@ -16,10 +15,8 @@
             }
 
             if (!rng) {
-                // Math.random()-based (RNG)
-                //
-                // If all else fails, use Math.random().  It's fast, but is of unspecified
-                // quality.
+                
+                
                 var _rnds = new Array(16);
                 rng = function () {
                     for (var i = 0, r; i < 16; i++) {
@@ -36,14 +33,7 @@
 
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
     }, {}], 2: [function (require, module, exports) {
-        //     uuid.js
-        //
-        //     Copyright (c) 2010-2012 Robert Kieffer
-        //     MIT License - http://opensource.org/licenses/mit-license.php
-
-        // Unique ID creation requires a high quality random # generator.  We feature
-        // detect to determine the best RNG source, normalizing to a function that
-        // returns 128-bits of randomness, since that's what's usually required
+      
         var _rng = require('./rng');
 
         // Maps for number <-> hex string conversion
@@ -86,10 +76,7 @@
                 bth[buf[i++]] + bth[buf[i++]];
         }
 
-        // **`v1()` - Generate time-based UUID**
-        //
-        // Inspired by https://github.com/LiosK/UUID.js
-        // and http://docs.python.org/library/uuid.html
+      
 
         // random #'s we need to init node and clockseq
         var _seedBytes = _rng();
@@ -115,17 +102,13 @@
 
             var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
 
-            // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-            // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-            // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-            // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+           
             var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
 
-            // Per 4.2.1.2, use count of uuid's generated during the current clock
-            // cycle to simulate higher resolution clock
+            
             var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
 
-            // Time since last uuid creation (in msecs)
+     
             var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs) / 10000;
 
             // Per 4.2.1.2, Bump clockseq on clock regression
@@ -133,13 +116,12 @@
                 clockseq = clockseq + 1 & 0x3fff;
             }
 
-            // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-            // time interval
+            
             if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
                 nsecs = 0;
             }
 
-            // Per 4.2.1.2 Throw error if too many uuids are requested
+          
             if (nsecs >= 10000) {
                 throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
             }
@@ -148,7 +130,6 @@
             _lastNSecs = nsecs;
             _clockseq = clockseq;
 
-            // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
             msecs += 12219292800000;
 
             // `time_low`
@@ -163,11 +144,11 @@
             b[i++] = tmh >>> 8 & 0xff;
             b[i++] = tmh & 0xff;
 
-            // `time_high_and_version`
+          
             b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
             b[i++] = tmh >>> 16 & 0xff;
 
-            // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+        
             b[i++] = clockseq >>> 8 | 0x80;
 
             // `clock_seq_low`
@@ -182,7 +163,7 @@
             return buf ? buf : unparse(b);
         }
 
-        // **`v4()` - Generate random UUID**
+        
 
         // See https://github.com/broofa/node-uuid for API details
         function v4(options, buf, offset) {
